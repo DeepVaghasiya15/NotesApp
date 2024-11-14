@@ -41,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
 
   void _onLoginUser(LoginUser event, Emitter<AuthState> emit) async {
-    final user = userBox.get(event.username);
+    final user = userBox.get(event.username,);
     if (user != null && user.password == event.password) {
       Hive.box('settingsBox').put('userId', user.id);
       emit(Authenticated(user: user));
@@ -52,6 +52,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _onLogoutUser(LogoutUser event, Emitter<AuthState> emit) async {
     await userBox.delete(authKey);
+    // Hive.box('settingsBox').delete('userId');
     emit(Unauthenticated());
   }
 }

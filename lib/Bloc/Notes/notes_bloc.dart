@@ -1,10 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_app/Bloc/Notes/notes_event.dart';
 import 'package:note_app/Bloc/Notes/notes_state.dart';
 import 'package:note_app/Bloc/UserAuthentication/user_auth_bloc.dart';
 import 'package:note_app/db/notes_database.dart';
-import 'package:hive/hive.dart';
-
 
 class NotesBloc extends Bloc<NotesEvent, NotesState> {
   final NotesDatabase _notesDatabase = NotesDatabase.instance;
@@ -22,6 +21,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       }
 
       emit(NotesLoading());
+
       try {
         final notes = await _notesDatabase.readNotesByUserId(userId);
         emit(NotesLoaded(notes: notes));
@@ -32,7 +32,6 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       }
     });
 
-
     on<AddNote>((event, emit) async {
       final userId = Hive.box('settingsBox').get('userId');
       if (userId == null || userId is! int) {
@@ -41,10 +40,10 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       }
 
       try {
-        final note = event.note.copy(userId: userId);
-        await _notesDatabase.create(note);
+        final note = event.note.copy(userId: userId); // Assign current userId to the note
+        await _notesDatabase.create(note); // Add note to database
 
-        add(LoadNotes());
+        add(LoadNotes()); // Reload the notes for the current user
       } catch (e) {
         emit(NotesError(message: e.toString()));
       }
@@ -60,7 +59,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       try {
         final note = event.note.copy(userId: userId);
         await _notesDatabase.update(note);
-        add(LoadNotes());
+        add(LoadNotes()); // Reload notes after updating
       } catch (e) {
         emit(NotesError(message: e.toString()));
       }
@@ -75,12 +74,10 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 
       try {
         await _notesDatabase.delete(event.noteId, userId as String);
-        add(LoadNotes());
+        add(LoadNotes()); // Reload notes after deleting
       } catch (e) {
         emit(NotesError(message: e.toString()));
       }
     });
-
-
   }
 }
