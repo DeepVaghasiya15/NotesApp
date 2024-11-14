@@ -30,7 +30,8 @@ class NotesDatabase {
       CREATE TABLE notes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
-        content TEXT NOT NULL
+        content TEXT NOT NULL,
+        userId TEXT NOT NULL
       )
     ''');
   }
@@ -38,13 +39,22 @@ class NotesDatabase {
   Future<Note> create(Note note) async {
     final db = await instance.database;
     final id = await db.insert('notes', note.toMap());
-    return note.copy(id: id);
+    return note.copy(id: id, userId: null);
   }
 
-  Future<List<Note>> readAllNotes() async {
+  Future<List<Note>> readNotesByUserId(int userId) async {
     final db = await instance.database;
-    final result = await db.query('notes');
-    return result.map((json) => Note.fromMap(json)).toList();
+    try {
+      final result = await db.query(
+        'notes',
+        where: 'userId = ?',
+        whereArgs: [userId],
+      );
+      return result.map((json) => Note.fromMap(json)).toList();
+    } catch (e) {
+      print("Error querying notes for userId $userId: $e");
+      rethrow;
+    }
   }
 
   Future<int> update(Note note) async {
@@ -52,17 +62,17 @@ class NotesDatabase {
     return db.update(
       'notes',
       note.toMap(),
-      where: 'id = ?',
-      whereArgs: [note.id],
+      where: 'id = ? AND userId = ?',
+      whereArgs: [note.id, note.userId],
     );
   }
 
-  Future<int> delete(int id) async {
+  Future<int> delete(int id, String userId) async {
     final db = await instance.database;
     return await db.delete(
       'notes',
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'id = ? AND userId = ?',
+      whereArgs: [id, userId],
     );
   }
 }

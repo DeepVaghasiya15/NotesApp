@@ -6,7 +6,6 @@ import 'package:note_app/Bloc/Notes/notes_state.dart';
 import 'package:note_app/Screens/AuthenticationUI/login_screen.dart';
 import 'package:note_app/Screens/add_note_screen.dart';
 import 'edit_note_screen.dart';
-import 'dart:math';
 
 
 class NotesHome extends StatelessWidget {

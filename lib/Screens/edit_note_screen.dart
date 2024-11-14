@@ -48,7 +48,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
                 final updatedNote = Note(
                   id: widget.note.id,
                   title: _titleController.text,
-                  content: _contentController.text,
+                  content: _contentController.text, userId: widget.note.userId,
                 );
                 context.read<NotesBloc>().add(UpdateNote(updatedNote, note: updatedNote));
                 Navigator.pop(context);
