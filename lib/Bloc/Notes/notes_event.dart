@@ -2,7 +2,13 @@ import '../../Model/note_model.dart';
 
 abstract class NotesEvent {}
 
-class LoadNotes extends NotesEvent{}
+class LoadNotes extends NotesEvent{
+  final int userId;
+
+  LoadNotes({required this.userId});
+
+  List<Object?> get props => [userId];
+}
 
 class AddNote extends NotesEvent{
   final Note note;

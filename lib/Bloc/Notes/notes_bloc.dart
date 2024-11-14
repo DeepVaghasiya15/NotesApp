@@ -19,9 +19,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
         emit(NotesError(message: "User not logged in, cannot load notes"));
         return;
       }
-
       emit(NotesLoading());
-
       try {
         final notes = await _notesDatabase.readNotesByUserId(userId);
         emit(NotesLoaded(notes: notes));
@@ -40,10 +38,10 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       }
 
       try {
-        final note = event.note.copy(userId: userId); // Assign current userId to the note
-        await _notesDatabase.create(note); // Add note to database
+        final note = event.note.copy(userId: userId);
+        await _notesDatabase.create(note);
 
-        add(LoadNotes()); // Reload the notes for the current user
+        add(LoadNotes(userId: userId));
       } catch (e) {
         emit(NotesError(message: e.toString()));
       }
@@ -59,7 +57,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       try {
         final note = event.note.copy(userId: userId);
         await _notesDatabase.update(note);
-        add(LoadNotes()); // Reload notes after updating
+        add(LoadNotes(userId: userId));
       } catch (e) {
         emit(NotesError(message: e.toString()));
       }
@@ -73,8 +71,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       }
 
       try {
-        await _notesDatabase.delete(event.noteId, userId as String);
-        add(LoadNotes()); // Reload notes after deleting
+        await _notesDatabase.delete(event.noteId, userId);
+        add(LoadNotes(userId: userId));
       } catch (e) {
         emit(NotesError(message: e.toString()));
       }
