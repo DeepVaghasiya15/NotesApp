@@ -43,18 +43,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void _onLoginUser(LoginUser event, Emitter<AuthState> emit) async {
     final user = userBox.get(event.username);
     if (user != null && user.password == event.password) {
-      Hive.box('settingsBox').put('userId', user.id); // Store user ID
+      Hive.box('settingsBox').put('userId', user.id);
       emit(Authenticated(user: user));
 
-      // Trigger LoadNotes event with the userId
       final userId = user.id;
     } else {
       emit(AuthError(error: "Invalid Username or Password"));
     }
   }
-
-
-
 
   void _onLogoutUser(LogoutUser event, Emitter<AuthState> emit) async {
     await userBox.delete(authKey);

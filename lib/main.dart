@@ -6,6 +6,7 @@ import 'package:note_app/Bloc/Notes/notes_bloc.dart';
 import 'package:note_app/Bloc/UserAuthentication/user_auth_bloc.dart';
 import 'package:note_app/Screens/AuthenticationUI/login_screen.dart';
 import 'package:note_app/Model/user.dart';
+import 'package:note_app/splash.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +49,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Note App',
         debugShowCheckedModeBanner: false,
-        home: LoginScreen(),
+        home: SplashScreen(),
       ),
     );
   }

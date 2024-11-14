@@ -60,7 +60,6 @@ class _NotesHomeState extends State<NotesHome> {
           if (state is NotesLoading) {
             return Center(child: CircularProgressIndicator());
           } else if (state is NotesLoaded) {
-            // Filter the notes based on the userId
             final userId = Hive.box('settingsBox').get('userId');
             final userNotes = state.notes.where((note) => note.userId == userId).toList();
 
